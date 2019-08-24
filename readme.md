@@ -5,6 +5,8 @@ BPVM
 
 A BytePusher VM, written in C++
 
+![Demo](https://github.com/majestic53/bpvm/blob/master/asset/demo.png "BPVM running nyan/sprite demos")
+
 Table of Contents
 =
 
