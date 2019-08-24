@@ -39,57 +39,10 @@ namespace bpvm {
 			TRACE_EXIT();
 		}
 
-#ifndef NDEBUG
 		void
-		video::frame_rate(
-			__in float frame_rate
-			)
+		video::create_window(void)
 		{
-			std::stringstream result;
-
-			TRACE_ENTRY_FORMAT("Frame-Rate=%.01f", frame_rate);
-
-			result << m_title << " [" << STRING_FLOAT(frame_rate) << " fps]";
-			SDL_SetWindowTitle(m_window, STRING(result.str()));
-
-			TRACE_EXIT();
-		}
-#endif // NDEBUG
-
-		void
-		video::on_initialize(
-			__in const void *context
-			)
-		{
-			size_t index = 0;
-			std::vector<color_t>::iterator color;
-
-			TRACE_ENTRY_FORMAT("Context=%p", context);
-
-			TRACE_MESSAGE(LEVEL_INFORMATION, "Video initializing");
-
-			m_color.resize(UINT8_MAX + 1, COLOR_BACKGROUND);
-
-			for(color = m_color.begin(); color != m_color.end(); ++color) {
-
-				if(index <= COLOR_MAX) {
-					uint8_t type = index++;
-
-					color->blue = (type % COLOR_WIDTH);
-					type -= color->blue;
-					color->blue *= COLOR_SCALE;
-
-					color->green = ((type / COLOR_WIDTH) % COLOR_WIDTH);
-					type -= (color->green * COLOR_WIDTH);
-					color->green *= COLOR_SCALE;
-
-					color->red = ((type / (COLOR_WIDTH * COLOR_WIDTH)) % COLOR_WIDTH);
-					color->red *= COLOR_SCALE;
-				}
-			}
-
-			m_pixel.resize(DISPLAY_WIDTH * DISPLAY_WIDTH, COLOR_BACKGROUND);
-			m_title = DISPLAY_TITLE;
+			TRACE_ENTRY();
 
 			m_window = SDL_CreateWindow(STRING(m_title), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 					DISPLAY_WIDTH * DISPLAY_SCALE, DISPLAY_WIDTH * DISPLAY_SCALE, SDL_WINDOW_FLAGS);
@@ -136,18 +89,13 @@ namespace bpvm {
 
 			SDL_RenderPresent(m_renderer);
 
-			TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "Video dimensions", "%ux%ux%u", DISPLAY_WIDTH, DISPLAY_WIDTH, DISPLAY_SCALE);
-			TRACE_MESSAGE(LEVEL_INFORMATION, "Video initialized");
-
 			TRACE_EXIT();
 		}
 
 		void
-		video::on_uninitialize(void)
+		video::destroy_window(void)
 		{
 			TRACE_ENTRY();
-
-			TRACE_MESSAGE(LEVEL_INFORMATION, "Video uninitializing");
 
 			if(m_texture) {
 				SDL_DestroyTexture(m_texture);
@@ -164,6 +112,84 @@ namespace bpvm {
 				m_window = nullptr;
 			}
 
+			TRACE_EXIT();
+		}
+
+		void
+		video::generate_colors(void)
+		{
+			size_t index = 0;
+			std::vector<color_t>::iterator color;
+
+			TRACE_ENTRY();
+
+			m_color.resize(UINT8_MAX + 1, COLOR_BACKGROUND);
+
+			for(color = m_color.begin(); color != m_color.end(); ++color) {
+
+				if(index <= COLOR_MAX) {
+					uint8_t type = index++;
+
+					color->blue = (type % COLOR_WIDTH);
+					type -= color->blue;
+					color->blue *= COLOR_SCALE;
+
+					color->green = ((type / COLOR_WIDTH) % COLOR_WIDTH);
+					type -= (color->green * COLOR_WIDTH);
+					color->green *= COLOR_SCALE;
+
+					color->red = ((type / (COLOR_WIDTH * COLOR_WIDTH)) % COLOR_WIDTH);
+					color->red *= COLOR_SCALE;
+				}
+			}
+
+			TRACE_EXIT();
+		}
+
+		void
+		video::on_initialize(
+			__in const void *context
+			)
+		{
+			address_t address = {};
+			const bpvm::system::memory *memory;
+
+			TRACE_ENTRY_FORMAT("Context=%p", context);
+
+			TRACE_MESSAGE(LEVEL_INFORMATION, "Video initializing");
+
+			memory = (const bpvm::system::memory *)context;
+			if(!memory) {
+				THROW_BPVM_SYSTEM_VIDEO_EXCEPTION_FORMAT(BPVM_SYSTEM_VIDEO_EXCEPTION_CONTEXT_INVALID, "%p", memory);
+			}
+
+			address.part[ADDRESS_PART_16] = memory->at(PIXEL_ADDRESS);
+
+			TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "Video address", "%u(%02xYYXX)", address.raw, address.part[ADDRESS_PART_16]);
+
+			generate_colors();
+
+			m_pixel.resize(DISPLAY_WIDTH * DISPLAY_WIDTH, COLOR_BACKGROUND);
+			m_title = DISPLAY_TITLE;
+
+			create_window();
+
+			TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "Video dimensions", "%ux%ux%u", DISPLAY_WIDTH, DISPLAY_WIDTH, DISPLAY_SCALE);
+
+			TRACE_MESSAGE(LEVEL_INFORMATION, "Video initialized");
+
+			TRACE_EXIT();
+		}
+
+		void
+		video::on_uninitialize(void)
+		{
+			TRACE_ENTRY();
+
+			TRACE_MESSAGE(LEVEL_INFORMATION, "Video uninitializing");
+
+			destroy_window();
+
 			m_title.clear();
 			m_pixel.clear();
 			m_color.clear();
@@ -174,7 +200,7 @@ namespace bpvm {
 		}
 
 		void
-		video::step(
+		video::render(
 			__in const bpvm::system::memory &memory
 			)
 		{
@@ -210,6 +236,21 @@ namespace bpvm {
 			}
 
 			SDL_RenderPresent(m_renderer);
+
+			TRACE_EXIT();
+		}
+
+		void
+		video::set_frame_rate(
+			__in float frame_rate
+			)
+		{
+			std::stringstream result;
+
+			TRACE_ENTRY_FORMAT("Frame-Rate=%.01f", frame_rate);
+
+			result << m_title << " [" << STRING_FLOAT(frame_rate) << " fps]";
+			SDL_SetWindowTitle(m_window, STRING(result.str()));
 
 			TRACE_EXIT();
 		}

@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BPVM_SYSTEM_VIDEO_H_
-#define BPVM_SYSTEM_VIDEO_H_
+#ifndef BPVM_SYSTEM_PROCESSOR_H_
+#define BPVM_SYSTEM_PROCESSOR_H_
 
 #include "./memory.h"
 
@@ -25,60 +25,38 @@ namespace bpvm {
 
 	namespace system {
 
-		class video :
-				public bpvm::type::singleton<bpvm::system::video> {
+		class processor :
+				public bpvm::type::singleton<bpvm::system::processor> {
 
 			public:
 
-				~video(void);
+				~processor(void);
 
-				void set_frame_rate(
-					__in float frame_rate
-					);
-
-				void render(
-					__in const bpvm::system::memory &memory
+				void update(
+					__in bpvm::system::memory &memory
 					);
 
 			protected:
 
-				friend class bpvm::type::singleton<bpvm::system::video>;
+				friend class bpvm::type::singleton<bpvm::system::processor>;
 
-				video(void);
+				processor(void);
 
-				video(
-					__in const video &other
+				processor(
+					__in const processor &other
 					) = delete;
 
-				video &operator=(
-					__in const video &other
+				processor &operator=(
+					__in const processor &other
 					) = delete;
-
-				void create_window(void);
-
-				void destroy_window(void);
-
-				void generate_colors(void);
 
 				void on_initialize(
 					__in const void *context
 					) override;
 
 				void on_uninitialize(void) override;
-
-				std::vector<color_t> m_color;
-
-				std::vector<color_t> m_pixel;
-
-				SDL_Renderer *m_renderer;
-
-				SDL_Texture *m_texture;
-
-				std::string m_title;
-
-				SDL_Window *m_window;
 		};
 	}
 }
 
-#endif // BPVM_SYSTEM_VIDEO_H_
+#endif // BPVM_SYSTEM_PROCESSOR_H_

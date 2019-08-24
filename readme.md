@@ -92,6 +92,10 @@ Changelog
 Version 0.1.1934
 -
 
+*Updated: 8/24/2019*
+
+* Implemented processor subsystem
+
 *Updated: 8/23/2019*
 
 * Implemented video subsystem

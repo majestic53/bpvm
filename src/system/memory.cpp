@@ -58,7 +58,6 @@ namespace bpvm {
 
 			TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "Memory size", "%.01f KB (%u bytes)",
 				bpvm::type::buffer::size() / (float)std::kilo::num, bpvm::type::buffer::size());
-
 			TRACE_MESSAGE(LEVEL_INFORMATION, "Memory initialized");
 
 			TRACE_EXIT();

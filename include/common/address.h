@@ -19,7 +19,7 @@
 #ifndef BPVM_COMMON_ADDRESS_H_
 #define BPVM_COMMON_ADDRESS_H_
 
-#define ADDRESS_WIDTH 24
+#define ADDRESS_WIDTH 3
 
 enum {
 	ADDRESS_PART_0 = 0,

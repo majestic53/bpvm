@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "../include/system/processor.h"
 #include "../include/system/video.h"
 #include "../include/bpvm.h"
 #include "./bpvm_type.h"
@@ -58,7 +59,7 @@ namespace bpvm {
 
 				try {
 					initialize(configuration);
-					loop();
+					run_loop();
 				} catch(bpvm::type::exception &exc) {
 					m_error = exc.to_string();
 					result = EXIT_FAILURE;
@@ -79,6 +80,7 @@ namespace bpvm {
 
 			runtime(void) :
 				m_memory(bpvm::system::memory::instance()),
+				m_processor(bpvm::system::processor::instance()),
 				m_video(bpvm::system::video::instance())
 			{
 				TRACE_ENTRY();
@@ -95,58 +97,6 @@ namespace bpvm {
 			runtime &operator=(
 				__in const runtime &other
 				) = delete;
-
-			void loop(void)
-			{
-				float frame_frequency, frame_rate;
-				uint32_t begin = 0, current = 0, duration = std::milli::den;
-
-				TRACE_ENTRY();
-
-				TRACE_MESSAGE(LEVEL_INFORMATION, "Runtime loop entry");
-
-				frame_frequency = FRAMES_PER_SECOND;
-				frame_rate = (std::milli::den / frame_frequency);
-
-				for(;;) {
-					float frequency, rate;
-					uint32_t end = SDL_GetTicks();
-
-					rate = (end - begin);
-					if(rate >= duration) {
-						rate = (current - ((rate - duration) / frame_frequency));
-						rate = ((rate > 0.f) ? rate : 0.f);
-
-						TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "Runtime framerate", "%.01f", rate);
-
-#ifndef NDEBUG
-						m_video.frame_rate(rate);
-#endif // NDEBUG
-						begin = end;
-						current = 0;
-					}
-
-					if(!poll()) {
-						TRACE_MESSAGE(LEVEL_INFORMATION, "Runtime loop interrupted");
-						break;
-					}
-
-					//m_processor.step(m_memory);
-					m_video.step(m_memory);
-					//m_audio.step(m_memory);
-
-					frequency = (SDL_GetTicks() - end);
-					if(frequency < frame_rate) {
-						SDL_Delay(frame_rate - frequency);
-					}
-
-					++current;
-				}
-
-				TRACE_MESSAGE(LEVEL_INFORMATION, "Runtime loop exit");
-
-				TRACE_EXIT();
-			}
 
 			void on_initialize(
 				__in const void *context
@@ -172,10 +122,10 @@ namespace bpvm {
 				TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "Runtime context", "%p", context);
 
 				m_memory.initialize(context);
-				//m_audio.initialize();
-				//m_input.initialize();
-				//m_processor.initialize();
-				m_video.initialize();
+				//m_audio.initialize(&m_memory);
+				//m_input.initialize(&m_memory);
+				m_processor.initialize(&m_memory);
+				m_video.initialize(&m_memory);
 
 				TRACE_MESSAGE(LEVEL_INFORMATION, "Runtime initialized");
 
@@ -189,7 +139,7 @@ namespace bpvm {
 				TRACE_MESSAGE(LEVEL_INFORMATION, "Runtime uninitializing");
 
 				m_video.uninitialize();
-				//m_processor.uninitialize();
+				m_processor.uninitialize();
 				//m_input.uninitialize();
 				//m_audio.uninitialize();
 				m_memory.uninitialize();
@@ -205,7 +155,7 @@ namespace bpvm {
 				TRACE_EXIT();
 			}
 
-			bool poll(void)
+			bool poll_events(void)
 			{
 				bool result = true;
 				SDL_Event event = {};
@@ -237,9 +187,59 @@ namespace bpvm {
 				return result;
 			}
 
+			void run_loop(void)
+			{
+				uint32_t begin = 0, current = 0;
+
+				TRACE_ENTRY();
+
+				TRACE_MESSAGE(LEVEL_INFORMATION, "Runtime loop entry");
+
+				for(;;) {
+					float frequency, rate;
+					uint32_t end = SDL_GetTicks();
+
+					rate = (end - begin);
+					if(rate >= MILLISECONDS_PER_SECOND) {
+						rate = (current - ((rate - MILLISECONDS_PER_SECOND) / FRAMES_PER_SECOND));
+						rate = ((rate > 0.f) ? rate : 0.f);
+
+						TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "Runtime framerate", "%.01f", rate);
+
+#ifndef NDEBUG
+						m_video.set_frame_rate(rate);
+#endif // NDEBUG
+						begin = end;
+						current = 0;
+					}
+
+					if(!poll_events()) {
+						TRACE_MESSAGE(LEVEL_INFORMATION, "Runtime loop interrupted");
+						break;
+					}
+
+					m_processor.update(m_memory);
+					m_video.render(m_memory);
+					//m_audio.render(m_memory);
+
+					frequency = (SDL_GetTicks() - end);
+					if(frequency < FRAME_RATE) {
+						SDL_Delay(FRAME_RATE - frequency);
+					}
+
+					++current;
+				}
+
+				TRACE_MESSAGE(LEVEL_INFORMATION, "Runtime loop exit");
+
+				TRACE_EXIT();
+			}
+
 			std::string m_error;
 
 			bpvm::system::memory &m_memory;
+
+			bpvm::system::processor &m_processor;
 
 			bpvm::system::video &m_video;
 	};
