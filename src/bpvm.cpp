@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "../include/system/audio.h"
 #include "../include/system/input.h"
 #include "../include/system/processor.h"
 #include "../include/system/video.h"
@@ -80,6 +81,7 @@ namespace bpvm {
 			friend class bpvm::type::singleton<bpvm::runtime>;
 
 			runtime(void) :
+				m_audio(bpvm::system::audio::instance()),
 				m_input(bpvm::system::input::instance()),
 				m_memory(bpvm::system::memory::instance()),
 				m_processor(bpvm::system::processor::instance()),
@@ -124,7 +126,7 @@ namespace bpvm {
 				TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "Runtime context", "%p", context);
 
 				m_memory.initialize(context);
-				//m_audio.initialize(&m_memory);
+				m_audio.initialize(&m_memory);
 				m_input.initialize(&m_memory);
 				m_processor.initialize(&m_memory);
 				m_video.initialize(&m_memory);
@@ -143,7 +145,7 @@ namespace bpvm {
 				m_video.uninitialize();
 				m_processor.uninitialize();
 				m_input.uninitialize();
-				//m_audio.uninitialize();
+				m_audio.uninitialize();
 				m_memory.uninitialize();
 
 				m_error.clear();
@@ -223,7 +225,7 @@ namespace bpvm {
 
 					m_processor.update(m_memory);
 					m_video.render(m_memory);
-					//m_audio.render(m_memory);
+					m_audio.render(m_memory);
 
 					frequency = (SDL_GetTicks() - end);
 					if(frequency < FRAME_RATE) {
@@ -237,6 +239,8 @@ namespace bpvm {
 
 				TRACE_EXIT();
 			}
+
+			bpvm::system::audio &m_audio;
 
 			std::string m_error;
 

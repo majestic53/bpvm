@@ -57,7 +57,7 @@ namespace bpvm {
 		#define COLOR_SCALE 51
 		#define COLOR_WIDTH 6
 
-		#define DISPLAY_SCALE 1
+		#define DISPLAY_SCALE 2
 		#define DISPLAY_TITLE BPVM " " VERSION_STRING()
 		#define DISPLAY_WIDTH 256
 

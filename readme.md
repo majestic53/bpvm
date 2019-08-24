@@ -96,6 +96,7 @@ Version 0.1.1934
 
 *Updated: 8/24/2019*
 
+* Implemented audio subsystem
 * Implemented input subsystem
 * Implemented processor subsystem
 
