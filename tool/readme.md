@@ -40,8 +40,9 @@ $ ./bin/bpvm file.bp
 
 BytePusher supports 16 input keys (0-F). The keys are mapped to the following keyboard keys:
 
-|---|---|---|---|
-|1=1|2=2|3=3|C=4|
-|4=Q|5=W|6=E|D=R|
-|7=A|8=S|9=D|E=F|
-|A=Z|0=X|B=C|F=V|
+|    |Col0|Col1|Col2|Col3|
+|----|----|----|----|----|
+|Row0|1=1 |2=2 |3=3 |C=4 |
+|Row1|4=Q |5=W |6=E |D=R |
+|Row2|7=A |8=S |9=D |E=F |
+|Row3|A=Z |0=X |B=C |F=V |
