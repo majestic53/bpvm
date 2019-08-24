@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../include/system/memory.h"
+#include "../include/system/video.h"
 #include "../include/bpvm.h"
 #include "./bpvm_type.h"
 
@@ -78,7 +78,8 @@ namespace bpvm {
 			friend class bpvm::type::singleton<bpvm::runtime>;
 
 			runtime(void) :
-				m_memory(bpvm::system::memory::instance())
+				m_memory(bpvm::system::memory::instance()),
+				m_video(bpvm::system::video::instance())
 			{
 				TRACE_ENTRY();
 
@@ -119,7 +120,7 @@ namespace bpvm {
 						TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "Runtime framerate", "%.01f", rate);
 
 #ifndef NDEBUG
-						//m_video.display().update(rate);
+						m_video.frame_rate(rate);
 #endif // NDEBUG
 						begin = end;
 						current = 0;
@@ -131,7 +132,7 @@ namespace bpvm {
 					}
 
 					//m_processor.step(m_memory);
-					//m_video.step(m_memory);
+					m_video.step(m_memory);
 					//m_audio.step(m_memory);
 
 					frequency = (SDL_GetTicks() - end);
@@ -174,7 +175,7 @@ namespace bpvm {
 				//m_audio.initialize();
 				//m_input.initialize();
 				//m_processor.initialize();
-				//m_video.initialize();
+				m_video.initialize();
 
 				TRACE_MESSAGE(LEVEL_INFORMATION, "Runtime initialized");
 
@@ -187,7 +188,7 @@ namespace bpvm {
 
 				TRACE_MESSAGE(LEVEL_INFORMATION, "Runtime uninitializing");
 
-				//m_video.uninitialize();
+				m_video.uninitialize();
 				//m_processor.uninitialize();
 				//m_input.uninitialize();
 				//m_audio.uninitialize();
@@ -239,6 +240,8 @@ namespace bpvm {
 			std::string m_error;
 
 			bpvm::system::memory &m_memory;
+
+			bpvm::system::video &m_video;
 	};
 }
 

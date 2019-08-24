@@ -92,6 +92,10 @@ Changelog
 Version 0.1.1934
 -
 
+*Updated: 8/23/2019*
+
+* Implemented video subsystem
+
 *Updated: 8/22/2019*
 
 * Initial commit

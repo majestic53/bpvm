@@ -54,11 +54,6 @@ namespace bpvm {
 			}
 
 			bpvm::type::buffer::load(configuration->path);
-
-			TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "File path", "%s", configuration->path);
-			TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "File size", "%.01f KB (%u bytes)",
-				bpvm::type::buffer::size() / (float)std::kilo::num, bpvm::type::buffer::size());
-
 			bpvm::type::buffer::resize(MEMORY_LENGTH, MEMORY_FILL);
 
 			TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "Memory size", "%.01f KB (%u bytes)",

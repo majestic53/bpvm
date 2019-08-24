@@ -52,6 +52,8 @@
 #define __out_opt
 #endif // __out_opt
 
+#include "./common/address.h"
+#include "./common/color.h"
 #include "./common/exception.h"
 #include "./common/level.h"
 #include "./common/string.h"

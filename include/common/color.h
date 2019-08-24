@@ -16,24 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BPVM_COMMON_VERSION_H_
-#define BPVM_COMMON_VERSION_H_
+#ifndef BPVM_COMMON_COLOR_H_
+#define BPVM_COMMON_COLOR_H_
 
-#define BPVM "BPVM"
-#define BPVM_NOTICE "Copyright (C) 2019 David Jolly"
+typedef union {
 
-#define RELEASE "alpha"
+	struct {
+		uint8_t blue;
+		uint8_t green;
+		uint8_t red;
+		uint8_t alpha;
+	};
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 1
-#define VERSION_REVISION 2
-#define VERSION_WEEK 1934
+	uint32_t raw;
+} __attribute__((packed)) color_t;
 
-#define VERSION_STRING() \
-	AS_STRING(VERSION_MAJOR) "." \
-	AS_STRING(VERSION_MINOR) "." \
-	AS_STRING(VERSION_WEEK) "." \
-	AS_STRING(VERSION_REVISION) "-" \
-	RELEASE
-
-#endif // BPVM_COMMON_VERSION_H_
+#endif // BPVM_COMMON_COLOR_H_

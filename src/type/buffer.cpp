@@ -68,6 +68,10 @@ namespace bpvm {
 				THROW_BPVM_TYPE_BUFFER_EXCEPTION_FORMAT(BPVM_TYPE_BUFFER_EXCEPTION_FILE_INVALID, "%s", STRING(path));
 			}
 
+			TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "File path", "%s", STRING(path));
+			TRACE_MESSAGE_FORMAT(LEVEL_INFORMATION, "File size", "%.01f KB (%u bytes)",
+				std::vector<uint8_t>::size() / (float)std::kilo::num, std::vector<uint8_t>::size());
+
 			TRACE_EXIT();
 		}
 	}

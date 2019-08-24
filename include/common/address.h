@@ -16,24 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BPVM_COMMON_VERSION_H_
-#define BPVM_COMMON_VERSION_H_
+#ifndef BPVM_COMMON_ADDRESS_H_
+#define BPVM_COMMON_ADDRESS_H_
 
-#define BPVM "BPVM"
-#define BPVM_NOTICE "Copyright (C) 2019 David Jolly"
+#define ADDRESS_WIDTH 24
 
-#define RELEASE "alpha"
+enum {
+	ADDRESS_PART_0 = 0,
+	ADDRESS_PART_8,
+	ADDRESS_PART_16,
+};
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 1
-#define VERSION_REVISION 2
-#define VERSION_WEEK 1934
+typedef union {
 
-#define VERSION_STRING() \
-	AS_STRING(VERSION_MAJOR) "." \
-	AS_STRING(VERSION_MINOR) "." \
-	AS_STRING(VERSION_WEEK) "." \
-	AS_STRING(VERSION_REVISION) "-" \
-	RELEASE
+	struct {
+		uint8_t part[ADDRESS_WIDTH];
+		uint8_t unused;
+	};
 
-#endif // BPVM_COMMON_VERSION_H_
+	uint32_t raw;
+} __attribute__((packed)) address_t;
+
+#endif // BPVM_COMMON_ADDRESS_H_
