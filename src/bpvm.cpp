@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "../include/system/input.h"
 #include "../include/system/processor.h"
 #include "../include/system/video.h"
 #include "../include/bpvm.h"
@@ -79,6 +80,7 @@ namespace bpvm {
 			friend class bpvm::type::singleton<bpvm::runtime>;
 
 			runtime(void) :
+				m_input(bpvm::system::input::instance()),
 				m_memory(bpvm::system::memory::instance()),
 				m_processor(bpvm::system::processor::instance()),
 				m_video(bpvm::system::video::instance())
@@ -123,7 +125,7 @@ namespace bpvm {
 
 				m_memory.initialize(context);
 				//m_audio.initialize(&m_memory);
-				//m_input.initialize(&m_memory);
+				m_input.initialize(&m_memory);
 				m_processor.initialize(&m_memory);
 				m_video.initialize(&m_memory);
 
@@ -140,7 +142,7 @@ namespace bpvm {
 
 				m_video.uninitialize();
 				m_processor.uninitialize();
-				//m_input.uninitialize();
+				m_input.uninitialize();
 				//m_audio.uninitialize();
 				m_memory.uninitialize();
 
@@ -169,7 +171,8 @@ namespace bpvm {
 						case SDL_KEYUP:
 
 							if(!event.key.repeat) {
-								//m_input.change(event.key.keysym.scancode, event.key.state == SDL_PRESSED);
+								m_input.change(m_memory, event.key.keysym.scancode,
+									event.key.state == SDL_PRESSED);
 							}
 							break;
 						case SDL_QUIT:
@@ -236,6 +239,8 @@ namespace bpvm {
 			}
 
 			std::string m_error;
+
+			bpvm::system::input &m_input;
 
 			bpvm::system::memory &m_memory;
 

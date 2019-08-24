@@ -55,6 +55,7 @@
 #include "./common/address.h"
 #include "./common/color.h"
 #include "./common/exception.h"
+#include "./common/input.h"
 #include "./common/level.h"
 #include "./common/string.h"
 #include "./common/trace.h"

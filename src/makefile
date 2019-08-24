@@ -34,7 +34,7 @@ archive:
 	@echo ''
 	@echo '--- BUILDING LIBRARY -----------------------'
 	ar rcs $(DIR_BIN_LIB)$(LIB) $(DIR_BUILD)base_bpvm.o \
-		$(DIR_BUILD)system_memory.o $(DIR_BUILD)system_processor.o $(DIR_BUILD)system_video.o \
+		$(DIR_BUILD)system_input.o $(DIR_BUILD)system_memory.o $(DIR_BUILD)system_processor.o $(DIR_BUILD)system_video.o \
 		$(DIR_BUILD)type_buffer.o $(DIR_BUILD)type_exception.o $(DIR_BUILD)type_trace.o
 	cp $(DIR_INC)bpvm.h $(DIR_BIN_INC)
 	@echo '--- DONE -----------------------------------'
@@ -50,7 +50,10 @@ base_bpvm.o: $(DIR_SRC)bpvm.cpp $(DIR_INC)bpvm.h
 
 ### SYSTEM ###
 
-build_system: system_memory.o system_processor.o system_video.o
+build_system: system_input.o system_memory.o system_processor.o system_video.o
+
+system_input.o: $(DIR_SRC_SYSTEM)input.cpp $(DIR_INC_SYSTEM)input.h
+	$(CXX) $(FLAGS) $(BUILD_FLAGS) $(TRACE_FLAGS) -c $(DIR_SRC_SYSTEM)input.cpp -o $(DIR_BUILD)system_input.o
 
 system_memory.o: $(DIR_SRC_SYSTEM)memory.cpp $(DIR_INC_SYSTEM)memory.h
 	$(CXX) $(FLAGS) $(BUILD_FLAGS) $(TRACE_FLAGS) -c $(DIR_SRC_SYSTEM)memory.cpp -o $(DIR_BUILD)system_memory.o

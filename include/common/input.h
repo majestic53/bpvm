@@ -16,24 +16,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BPVM_COMMON_VERSION_H_
-#define BPVM_COMMON_VERSION_H_
+#ifndef BPVM_COMMON_INPUT_H_
+#define BPVM_COMMON_INPUT_H_
 
-#define BPVM "BPVM"
-#define BPVM_NOTICE "Copyright (C) 2019 David Jolly"
+enum {
+	INPUT_8 = 0,
+	INPUT_9,
+	INPUT_A,
+	INPUT_B,
+	INPUT_C,
+	INPUT_D,
+	INPUT_E,
+	INPUT_F,
+	INPUT_0,
+	INPUT_1,
+	INPUT_2,
+	INPUT_3,
+	INPUT_4,
+	INPUT_5,
+	INPUT_6,
+	INPUT_7,
+};
 
-#define RELEASE "alpha"
+#define INPUT_MAX INPUT_7
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 1
-#define VERSION_REVISION 4
-#define VERSION_WEEK 1934
+enum {
+	INPUT_PART_LOW = 0,
+	INPUT_PART_HIGH,
+};
 
-#define VERSION_STRING() \
-	AS_STRING(VERSION_MAJOR) "." \
-	AS_STRING(VERSION_MINOR) "." \
-	AS_STRING(VERSION_WEEK) "." \
-	AS_STRING(VERSION_REVISION) "-" \
-	RELEASE
+#define INPUT_WIDTH (INPUT_PART_HIGH + 1)
 
-#endif // BPVM_COMMON_VERSION_H_
+typedef union {
+	uint8_t part[INPUT_WIDTH];
+	uint16_t raw;
+} __attribute__((packed)) input_t;
+
+#endif // BPVM_COMMON_INPUT_H_
